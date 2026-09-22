@@ -1,69 +1,73 @@
-# CreatioChallengeBack
+# Creatio Challenge API
 
-API .NET que actúa como proxy seguro entre un frontend (Angular) y Creatio OData usando OAuth2 Client Credentials.
+API .NET que conecta el frontend Angular con Creatio OData usando OAuth 2.0 Client Credentials.
 
-Resumen
-- Arquitectura: Angular → .NET Web API → OAuth2 Client Credentials → Creatio OData
-- Endpoints principales:
-  - GET /api/accounts?search={q}&page={n}&pageSize={m}  (paginado server-side, select/expand)
-  - POST /api/accounts  (crear Account — validar y mapear antes de enviar a Creatio)
-  - GET /health
-  - Swagger (Development): /swagger
+## Requisitos
 
-Requisitos previos
-- .NET 10 SDK
-- Credenciales de OAuth2 para Creatio (ClientId y ClientSecret)
+- .NET 10 SDK.
+- Un cliente OAuth de Creatio con `Client ID` y `Client Secret`.
+- El repositorio del frontend, si también se quiere probar la interfaz.
 
-Configuración recomendada (local, segura)
-1) Usar dotnet user-secrets (recomendado para desarrollo):
-   cd CreatioChallengeBack
-   dotnet user-secrets init --project "CreatioChallengeBack.csproj"
-   dotnet user-secrets set "Creatio:ClientSecret" "<TU_CLIENT_SECRET>" --project "CreatioChallengeBack.csproj"
-   dotnet user-secrets set "Creatio:ClientId" "<TU_CLIENT_ID>" --project "CreatioChallengeBack.csproj"
-   dotnet user-secrets set "Creatio:TokenEndpoint" "https://.../connect/token" --project "CreatioChallengeBack.csproj"
+## Configuración segura
 
-2) Alternativa: variables de entorno (PowerShell, sesión actual):
-   $env:CREATIO_CLIENT_SECRET = '<TU_CLIENT_SECRET>'
-   $env:Creatio__ClientId = '<TU_CLIENT_ID>'
-   $env:Creatio__TokenEndpoint = 'https://.../connect/token'
-   dotnet run --project .\CreatioChallengeBack\CreatioChallengeBack.csproj
+Las credenciales no se escriben en `appsettings.json`, en Angular ni en el README.
 
-3) Para depuración en Visual Studio: editar Properties/launchSettings.json y añadir en el perfil:
-   "environmentVariables": {
-	 "CREATIO_CLIENT_SECRET": "<TU_CLIENT_SECRET>",
-	 "Creatio__ClientId": "<TU_CLIENT_ID>",
-	 "Creatio__TokenEndpoint": "https://.../connect/token"
-   }
+1. Ubicate en la raíz del repositorio, donde están `.gitignore` y `CreatioChallengeBack.slnx`.
+2. Copiá el archivo de ejemplo:
 
-4) .env (opcional): copiar .env.example → .env en tu máquina local. Por defecto .NET no carga .env; si quieres usarlo, carga las variables en tu sesión o añadimos soporte con DotNetEnv.
+```powershell
+Copy-Item .\CreatioChallengeBack\.env.example .\.env
+```
 
-Ejecución
-- Desde la terminal (PowerShell) con las variables definidas o user-secrets configurados:
-  dotnet run --project .\CreatioChallengeBack\CreatioChallengeBack.csproj
-- Abrir: http://localhost:<puerto>/swagger (Development) o probar directamente:
-  GET http://localhost:<puerto>/api/accounts?search=Our&page=1&pageSize=5
+3. Abrí `.env` y completá los valores reales:
 
-Qué debe hacer quien descargue el proyecto
-1. Clonar el repo.
-2. Proveer secretos localmente (user-secrets o variables de entorno) antes de ejecutar.
-3. Ejecutar dotnet run desde la carpeta raíz o usar Visual Studio.
+```env
+CLIENT_ID=tu_client_id
+CLIENT_SECRET=tu_client_secret
+TOKEN_URL=https://tu-tenant.creatio.com/connect/token
+BASE_URL=https://tu-tenant.creatio.com/0/odata/
+```
 
-Eliminar secretos antes de commitear
-- Nunca incluir secretos en archivos versionados. Pasos para limpiar:
-  - Si usaste user-secrets: dotnet user-secrets remove "Creatio:ClientSecret" --project "CreatioChallengeBack\CreatioChallengeBack.csproj"
-  - Si seteaste variables de entorno temporales, ciérralas (cierrar sesión) o eliminarlas con setx con valor vacío.
+El archivo `.env` está excluido por Git. No lo subas ni lo envíes dentro del repositorio.
 
-Errores comunes y significado
-- InvalidOperationException: "Client secret no configurado" → no detectó secret (usar user-secrets o variable de entorno).
-- 401/403 desde Creatio → ClientId/ClientSecret incorrectos o permisos.
-- 429 → rate limit de Creatio (recomiendo añadir retries con backoff si ocurre frecuentemente).
-- 5xx → error en Creatio; revisar body devuelto y logs del backend.
+## Ejecutar la API
 
-Buenas prácticas
-- Mantener .env.example en el repo como plantilla.
-- Usar user-secrets para desarrollo y variables de entorno en CI/CD.
-- No exponer tokens ni secretos al frontend.
+Desde la raíz del repositorio:
 
-Contacto y ayuda
-- Si necesitás que agregue scripts para inicializar secrets o que implemente creación POST a Creatio, decímelo y lo agrego.
+```powershell
+dotnet restore .\CreatioChallengeBack\CreatioChallengeBack.csproj
+dotnet run --project .\CreatioChallengeBack\CreatioChallengeBack.csproj
+```
 
+La aplicación mostrará en la consola la URL local donde quedó disponible.
+
+## Verificar que funciona
+
+Primero comprobá el estado de la API usando la URL que mostró la consola:
+
+```text
+GET /health
+```
+
+Después probá el listado:
+
+```text
+GET /api/Accounts?page=1&pageSize=10&search=
+```
+
+La primera consulta a cuentas solicita el token a Creatio. Si las credenciales o las URLs son incorrectas, la API informa un error de autenticación o conexión.
+
+## Endpoints principales
+
+- `GET /health`: verifica que la API esté levantada.
+- `GET /api/Accounts`: lista cuentas con búsqueda y paginación.
+- `POST /api/Accounts`: crea una cuenta en Creatio.
+
+El frontend nunca recibe el `Client Secret`; solo se comunica con esta API.
+
+## Seguridad
+
+- No guardar secretos en archivos versionados.
+- No enviar credenciales en el JSON del frontend.
+- Para CI/CD usar variables protegidas o un gestor de secretos.
+- Si un secreto fue compartido o publicado, revocarlo y generar uno nuevo.

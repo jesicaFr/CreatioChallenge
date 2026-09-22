@@ -34,6 +34,18 @@ catch
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Allow local .env values to configure the Creatio tenant without storing them in appsettings.
+var creatioBaseUrl = Environment.GetEnvironmentVariable("BASE_URL");
+var creatioTokenUrl = Environment.GetEnvironmentVariable("TOKEN_URL");
+if (!string.IsNullOrWhiteSpace(creatioBaseUrl))
+{
+    builder.Configuration["Creatio:BaseUrl"] = creatioBaseUrl;
+}
+if (!string.IsNullOrWhiteSpace(creatioTokenUrl))
+{
+    builder.Configuration["Creatio:TokenEndpoint"] = creatioTokenUrl;
+}
+
 // Configuration and services
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
