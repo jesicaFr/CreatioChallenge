@@ -1,0 +1,6 @@
+@CreatioChallengeBack_HostAddress = http://localhost:5204
+
+GET {{CreatioChallengeBack_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

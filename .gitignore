@@ -1,0 +1,15 @@
+## Build
+/bin/
+/obj/
+
+# Visual Studio
+.vs/
+
+# User secrets and environment
+.env
+
+# Local run-once script (may be created locally with secrets)
+run-once.ps1
+
+# Logs
+.logs/

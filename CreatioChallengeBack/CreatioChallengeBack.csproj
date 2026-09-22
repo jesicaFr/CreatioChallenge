@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>148781b3-6db7-4f38-9824-4584a896899d</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Swashbuckle/Microsoft.OpenApi package references removed to avoid mixed OpenApi assembly conflicts.
+         Re-add appropriate compatible package versions here if needed. -->
+    <PackageReference Include="DotNetEnv" Version="3.1.0" />
+  </ItemGroup>
+
+</Project>
