@@ -1,73 +1,56 @@
 # Creatio Challenge API
 
-API .NET que conecta el frontend Angular con Creatio OData usando OAuth 2.0 Client Credentials.
+API .NET que expone un backend que consume Creatio OData usando OAuth2 (client credentials).
 
-## Requisitos
+INSTRUCCIONES RÁPIDAS PARA USUARIO
 
-- .NET 10 SDK.
-- Un cliente OAuth de Creatio con `Client ID` y `Client Secret`.
-- El repositorio del frontend, si también se quiere probar la interfaz.
+1) Editá solo este archivo de configuración: `CreatioChallengeBack/appsettings.Development.json`.
+   - Rellená la sección "Creatio" con los valores reales: ClientId, ClientSecret, TokenEndpoint y BaseUrl.
+   - Ejemplo mínimo:
 
-## Configuración segura
-
-Las credenciales no se escriben en `appsettings.json`, en Angular ni en el README.
-
-1. Ubicate en la raíz del repositorio, donde están `.gitignore` y `CreatioChallengeBack.slnx`.
-2. Copiá el archivo de ejemplo:
-
-```powershell
-Copy-Item .\CreatioChallengeBack\.env.example .\.env
+```json
+{
+  "Creatio": {
+	"ClientId": "<tu-client-id>",
+	"ClientSecret": "<tu-client-secret>",
+	"TokenEndpoint": "https://tu-tenant.creatio.com/connect/token",
+	"BaseUrl": "https://tu-tenant.creatio.com/0/odata/"
+  }
+}
 ```
 
-3. Abrí `.env` y completá los valores reales:
+2) Guardá el archivo, reiniciá la aplicación y probá los endpoints.
 
-```env
-CLIENT_ID=tu_client_id
-CLIENT_SECRET=tu_client_secret
-TOKEN_URL=https://tu-tenant.creatio.com/connect/token
-BASE_URL=https://tu-tenant.creatio.com/0/odata/
-```
+Nota de seguridad: no subas `ClientSecret` al repositorio.
 
-El archivo `.env` está excluido por Git. No lo subas ni lo envíes dentro del repositorio.
+CONTENIDO DE LA API
 
-## Ejecutar la API
+- GET /health
+  - Devuelve 200 si la API está levantada.
 
-Desde la raíz del repositorio:
+- GET /api/Accounts?page={page}&pageSize={pageSize}&search={texto}
+  - Lista cuentas con paginación y búsqueda por nombre.
+  - Parámetros:
+	- page: número de página (empieza en 1).
+	- pageSize: elementos por página (por defecto 20).
+	- search: texto opcional para filtrar por Name.
+  - Respuesta (ejemplo):
+	{
+	  "page": 1,
+	  "pageSize": 20,
+	  "total": 123,
+	  "items": [ { "id": "...", "name": "...", "code": "...", "typeName": "..." } ]
+	}
 
-```powershell
-dotnet restore .\CreatioChallengeBack\CreatioChallengeBack.csproj
-dotnet run --project .\CreatioChallengeBack\CreatioChallengeBack.csproj
-```
+- POST /api/Accounts
+  - Crea una cuenta en Creatio.
+  - Body JSON requerido: { "name": "...", "code": "...", "typeId": "<guid>", "phone": "...", "web": "..." }
 
-La aplicación mostrará en la consola la URL local donde quedó disponible.
+TECNOLOGÍA DE AUTENTICACIÓN Y TOKEN
 
-## Verificar que funciona
+- La API usa OAuth2 Client Credentials para obtener un access token desde `TokenEndpoint`.
+- El `ClientSecret` sólo debe existir en el backend; el frontend nunca lo recibe.
+- El token se solicita en runtime y se cachea en memoria por el tiempo de expiración (o el valor configurado en `TokenCacheSeconds`).
 
-Primero comprobá el estado de la API usando la URL que mostró la consola:
+Si necesitás más detalles técnicos (user-secrets, variables de entorno, o ver el token manualmente), pedímelo y te doy los comandos, pero para un usuario estándar sólo editá `appsettings.Development.json` y arrancá la app.
 
-```text
-GET /health
-```
-
-Después probá el listado:
-
-```text
-GET /api/Accounts?page=1&pageSize=10&search=
-```
-
-La primera consulta a cuentas solicita el token a Creatio. Si las credenciales o las URLs son incorrectas, la API informa un error de autenticación o conexión.
-
-## Endpoints principales
-
-- `GET /health`: verifica que la API esté levantada.
-- `GET /api/Accounts`: lista cuentas con búsqueda y paginación.
-- `POST /api/Accounts`: crea una cuenta en Creatio.
-
-El frontend nunca recibe el `Client Secret`; solo se comunica con esta API.
-
-## Seguridad
-
-- No guardar secretos en archivos versionados.
-- No enviar credenciales en el JSON del frontend.
-- Para CI/CD usar variables protegidas o un gestor de secretos.
-- Si un secreto fue compartido o publicado, revocarlo y generar uno nuevo.

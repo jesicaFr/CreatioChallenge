@@ -73,7 +73,10 @@ namespace CreatioChallengeBack.Clients
             if (!response.IsSuccessStatusCode)
             {
                 var msg = await response.Content.ReadAsStringAsync(cancellationToken);
-                throw new HttpRequestException($"Creatio OData error: {response.StatusCode} - {msg}", null, response.StatusCode);
+                var reason = response.ReasonPhrase;
+                var uri = requestUri;
+                var error = $"Creatio OData error: {response.StatusCode} {reason} - RequestUri: {uri} - Body: {msg}";
+                throw new HttpRequestException(error, null, response.StatusCode);
             }
 
             var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
