@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CreatioChallengeBack")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e96ddce13b63ca9c1de940e946bef87939bbd8ba")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4a045da4d73f25d9a33c467e443aac79b67566fd")]
 [assembly: System.Reflection.AssemblyProductAttribute("CreatioChallengeBack")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CreatioChallengeBack")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
