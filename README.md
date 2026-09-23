@@ -63,7 +63,7 @@ Obtiene las cuentas desde Creatio, permitiendo paginación y búsqueda por nombr
 | Parámetro  | Tipo   | Descripción                            | Default |
 | ---------- | ------ | -------------------------------------- | ------- |
 | `page`     | int    | Número de página. Comienza en 1        | `1`     |
-| `pageSize` | int    | Cantidad de elementos por página       | `20`    |
+| `pageSize` | int    | Cantidad de elementos por página       | `10`    |
 | `search`   | string | Texto opcional para filtrar por nombre | —       |
 
 #### Ejemplo
