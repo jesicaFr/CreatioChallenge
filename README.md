@@ -29,16 +29,6 @@ Completá la sección `Creatio` con los valores correspondientes a tu instancia:
 
 > **Importante:** no subir credenciales reales al repositorio. El `ClientSecret` debe mantenerse únicamente en el entorno del backend.
 
-### 2. Ejecutar la API
-
-Desde la carpeta del proyecto:
-
-```bash
-dotnet restore
-dotnet run
-```
-
-La URL de ejecución dependerá de la configuración de `launchSettings.json`.
 
 ---
 
